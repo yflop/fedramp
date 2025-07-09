@@ -29,6 +29,7 @@ func Execute() error {
 		convert,
 		openControl,
 		scnCommand,
+		ksiCommand,
 	}
 
 	return app.Run(os.Args)

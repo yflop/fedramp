@@ -1,8 +1,30 @@
-# FedRAMP R5 Balance Implementations
+# FedRAMP R5 Balance & 20x Phase One Implementations
 
-This repository now includes initial implementations for **FedRAMP's R5 Balance Improvement Releases (BIRs)** as outlined in the [FedRAMP roadmap](https://github.com/FedRAMP/roadmap/issues?q=type:%22R5%20Balance%22).
+This repository now includes implementations for:
+1. **FedRAMP's R5 Balance Improvement Releases (BIRs)** as outlined in the [FedRAMP roadmap](https://github.com/FedRAMP/roadmap/issues?q=type:%22R5%20Balance%22)
+2. **FedRAMP 20x Phase One Pilot** for automated Key Security Indicators (KSI) validation
 
 ## 🚀 What We've Built
+
+### FedRAMP 20x Phase One Support (NEW!)
+**Status**: ✅ Complete Implementation for 20x Pilot  
+**Documentation**: [FedRAMP 20x Phase One](https://www.fedramp.gov/20x/)
+
+**Features:**
+- Complete Key Security Indicators (KSI) validation framework
+- Machine-readable assessment reports in JSON format
+- Automated validation for cloud-native security capabilities
+- Continuous reporting proposal generator
+- 3PAO attestation support
+- Trust Center configuration templates
+
+**Key Files:**
+- `pkg/fedramp/ksi.go` - KSI validation framework
+- `pkg/fedramp/continuous_reporting.go` - Continuous reporting capabilities
+- `cli/cmd/ksi.go` - CLI commands for KSI operations
+- `examples/fedramp_20x_demo.go` - Complete 20x submission demo
+
+## 🚀 R5 Balance Implementations
 
 ### 1. R5.SCN - Significant Change Notification Support
 **Status**: ✅ Initial Implementation Complete  
@@ -127,4 +149,94 @@ By contributing to these implementations, you're helping modernize federal cloud
 
 ---
 
-**Ready to contribute?** Join the [Rev5 Community Working Group](https://github.com/FedRAMP/roadmap/issues/16) and help shape the future of FedRAMP automation! 
+**Ready to contribute?** Join the [Rev5 Community Working Group](https://github.com/FedRAMP/roadmap/issues/16) and help shape the future of FedRAMP automation!
+
+## 📚 Complete Usage Guide
+
+### FedRAMP 20x Phase One Operations
+
+```bash
+# 1. Validate Key Security Indicators
+gocomply_fedramp ksi validate CSO-EXAMPLE-001 --output ksi-report.json
+
+# 2. Generate continuous reporting proposal
+gocomply_fedramp ksi proposal --service-id CSO-EXAMPLE-001 --output proposal.json
+
+# 3. Generate continuous monitoring report
+gocomply_fedramp ksi report --service-id CSO-EXAMPLE-001 --output continuous-report.json
+
+# 4. Run complete 20x demo (generates all required files)
+go run examples/fedramp_20x_demo.go
+```
+
+### Submitting to FedRAMP 20x Pilot
+
+1. **Run the complete demo** to generate all required files
+2. **Review generated files**:
+   - `ksi-report.json` - KSI validation results with evidence
+   - `continuous-reporting-proposal.json` - Automated reporting plan
+   - `fedramp-20x-submission.json` - Complete submission package
+   - `trust-center.json` - Trust center configuration
+
+3. **Send submission email** to 20x@fedramp.gov with:
+   - Summary of your cloud service
+   - Points of contact for CSP and 3PAO
+   - Instructions to access the submission package (do NOT attach files)
+
+4. **Share in community** (optional but encouraged):
+   - Post draft submission to [FedRAMP Community Discussions](https://github.com/FedRAMP/community/discussions)
+   - Get feedback from other participants
+   - Learn from FedRAMP's responses to other submissions
+
+### Building Custom KSI Validators
+
+```go
+// Example: Add custom KSI validation
+evidence := []fedramp.KSIEvidence{
+    {
+        Type:        "api_check",
+        Description: "Verified encryption via AWS KMS API",
+        Reference:   "kms-check-20250110",
+        Source:      "AWS API",
+        Timestamp:   time.Now(),
+    },
+}
+
+validation := fedramp.ValidateKSI("KSI-SC", evidence, true)
+report.AddValidation(validation)
+```
+
+## 🔧 Development Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/gocomply/fedramp.git
+cd fedramp
+
+# Build all components
+go build ./...
+
+# Run tests
+go test ./...
+
+# Build CLI
+go build -o gocomply_fedramp cli/gocomply_fedramp/main.go
+```
+
+## 🎯 Implementation Status
+
+| Feature | R5.SCN | R5.CRS | 20x KSI | 20x Continuous |
+|---------|--------|--------|---------|----------------|
+| Core Implementation | ✅ | ✅ | ✅ | ✅ |
+| CLI Commands | ✅ | ✅ | ✅ | ✅ |
+| JSON Export | ✅ | ✅ | ✅ | ✅ |
+| Validation | ✅ | ✅ | ✅ | ✅ |
+| 3PAO Support | ✅ | ✅ | ✅ | ✅ |
+| API Integration | 🔄 | 🔄 | ✅ | ✅ |
+| OSCAL Integration | 🔄 | 🔄 | 🔄 | 🔄 |
+
+Legend: ✅ Complete | 🔄 In Progress | ⏳ Planned
+
+---
+
+**Questions?** Open an issue or join the discussion at [FedRAMP Community](https://github.com/FedRAMP/community/discussions) 
