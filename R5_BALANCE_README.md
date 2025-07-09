@@ -28,7 +28,7 @@ This repository now includes implementations for:
 
 ### 1. R5.SCN - Significant Change Notification Support
 **Status**: ✅ Initial Implementation Complete  
-**GitHub Issue**: [#16](https://github.com/FedRAMP/roadmap/issues/16)
+**GitHub Issue**: [#21](https://github.com/FedRAMP/roadmap/issues/21)
 
 **Features:**
 - Complete SCN data structures following RFC-0007 specifications
@@ -125,10 +125,43 @@ Based on the [roadmap issue #16](https://github.com/FedRAMP/roadmap/issues/16):
 4. **Validation Enhancement**: Improve SCN classification logic
 5. **Dashboard Development**: Create visualization tools for CRS data
 
-### Next Steps:
+### 3. R5.MAS - Minimum Assessment Standard  
+**Status**: ✅ Complete Implementation  
+**GitHub Issue**: [#19](https://github.com/FedRAMP/roadmap/issues/19)
 
-1. **R5.MAS** (Minimum Assessment Standard) - Issue [#19](https://github.com/FedRAMP/roadmap/issues/19)
-2. **R5.SSAD** (Storing and Sharing Authorization Data) - Issue [#28](https://github.com/FedRAMP/roadmap/issues/28)
+**Features:**
+- Complete assessment framework following MAS requirements
+- Support for all assessment types (initial, annual, significant change, incident)
+- Assessment method tracking (examine, interview, test)
+- Evidence collection and management
+- Automated vs manual assessment tracking
+- 3PAO attestation support
+- Findings management with severity levels
+- Validation of MAS compliance
+
+**Key Files:**
+- `pkg/fedramp/mas.go` - MAS data structures and validation
+- `cli/cmd/mas.go` - CLI commands for MAS operations
+- `examples/mas_demo.go` - Complete MAS assessment demo
+
+### 4. R5.SSAD - Storing and Sharing Authorization Data  
+**Status**: ✅ Complete Implementation  
+**GitHub Issue**: [#28](https://github.com/FedRAMP/roadmap/issues/28)
+
+**Features:**
+- Standardized authorization data packages
+- Document management (SSP, SAP, SAR, POA&M, ConMon, KSI)
+- Access control with role-based permissions
+- Distribution tracking and audit logs
+- Package integrity with cryptographic hashing
+- Repository management with search capabilities
+- Support for FedRAMP 20x KSI reports
+- Automated metadata extraction
+
+**Key Files:**
+- `pkg/fedramp/ssad.go` - SSAD package and repository management
+- `cli/cmd/ssad.go` - CLI commands for SSAD operations
+- `examples/ssad_demo.go` - Complete SSAD workflow demo
 
 ## 🔗 Related Resources
 
@@ -225,15 +258,16 @@ go build -o gocomply_fedramp cli/gocomply_fedramp/main.go
 
 ## 🎯 Implementation Status
 
-| Feature | R5.SCN | R5.CRS | 20x KSI | 20x Continuous |
-|---------|--------|--------|---------|----------------|
-| Core Implementation | ✅ | ✅ | ✅ | ✅ |
-| CLI Commands | ✅ | ✅ | ✅ | ✅ |
-| JSON Export | ✅ | ✅ | ✅ | ✅ |
-| Validation | ✅ | ✅ | ✅ | ✅ |
-| 3PAO Support | ✅ | ✅ | ✅ | ✅ |
-| API Integration | 🔄 | 🔄 | ✅ | ✅ |
-| OSCAL Integration | 🔄 | 🔄 | 🔄 | 🔄 |
+| Feature | R5.SCN | R5.CRS | R5.MAS | R5.SSAD | 20x KSI | 20x Continuous |
+|---------|--------|--------|--------|---------|---------|----------------|
+| Core Implementation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| CLI Commands | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| JSON Export | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Validation | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 3PAO Support | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Demo Applications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| API Integration | 🔄 | 🔄 | 🔄 | 🔄 | ✅ | ✅ |
+| OSCAL Integration | 🔄 | 🔄 | 🔄 | 🔄 | 🔄 | 🔄 |
 
 Legend: ✅ Complete | 🔄 In Progress | ⏳ Planned
 

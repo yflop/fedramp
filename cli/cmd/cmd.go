@@ -30,6 +30,8 @@ func Execute() error {
 		openControl,
 		scnCommand,
 		ksiCommand,
+		masCommand,
+		ssadCommand,
 	}
 
 	return app.Run(os.Args)
