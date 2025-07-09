@@ -28,6 +28,7 @@ func Execute() error {
 	app.Commands = []cli.Command{
 		convert,
 		openControl,
+		scnCommand,
 	}
 
 	return app.Run(os.Args)
