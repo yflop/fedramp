@@ -346,3 +346,77 @@ func (mgr *CRSManager) GenerateDashboardData(serviceID string) map[string]interf
 	
 	return dashboard
 } 
+
+// KeySecurityMetrics represents the key security metrics for FedRAMP
+type KeySecurityMetrics struct {
+	VulnerabilityScanning   VulnerabilityMetric   `json:"vulnerability_scanning"`
+	SecurityIncidents       IncidentMetric        `json:"security_incidents"`
+	ConfigurationManagement ConfigurationMetric   `json:"configuration_management"`
+	AccessControl          AccessControlMetric    `json:"access_control"`
+	SystemAvailability     AvailabilityMetric    `json:"system_availability"`
+	PatchManagement        PatchMetric           `json:"patch_management"`
+}
+
+// VulnerabilityMetric tracks vulnerability scanning metrics
+type VulnerabilityMetric struct {
+	ScansCompleted      int       `json:"scans_completed"`
+	CriticalFindings    int       `json:"critical_findings"`
+	HighFindings        int       `json:"high_findings"`
+	MediumFindings      int       `json:"medium_findings"`
+	LowFindings         int       `json:"low_findings"`
+	LastScanDate        time.Time `json:"last_scan_date"`
+	RemediationRate     float64   `json:"remediation_rate"`
+}
+
+// IncidentMetric tracks security incident metrics
+type IncidentMetric struct {
+	TotalIncidents      int     `json:"total_incidents"`
+	OpenIncidents       int     `json:"open_incidents"`
+	ClosedIncidents     int     `json:"closed_incidents"`
+	AverageResolutionTime float64 `json:"average_resolution_time_hours"`
+	IncidentsByCategory map[string]int `json:"incidents_by_category"`
+}
+
+// ConfigurationMetric tracks configuration management metrics
+type ConfigurationMetric struct {
+	BaselineCompliance  float64 `json:"baseline_compliance_percentage"`
+	UnauthorizedChanges int     `json:"unauthorized_changes"`
+	ConfigurationDrift  int     `json:"configuration_drift_instances"`
+	LastBaselineReview  time.Time `json:"last_baseline_review"`
+}
+
+// AccessControlMetric tracks access control metrics
+type AccessControlMetric struct {
+	ActiveUsers         int     `json:"active_users"`
+	PrivilegedUsers     int     `json:"privileged_users"`
+	FailedLoginAttempts int     `json:"failed_login_attempts"`
+	AccountLockouts     int     `json:"account_lockouts"`
+	MFAAdoptionRate     float64 `json:"mfa_adoption_rate"`
+}
+
+// AvailabilityMetric tracks system availability metrics
+type AvailabilityMetric struct {
+	UptimePercentage    float64 `json:"uptime_percentage"`
+	PlannedDowntime     float64 `json:"planned_downtime_hours"`
+	UnplannedDowntime   float64 `json:"unplanned_downtime_hours"`
+	MTTRHours           float64 `json:"mttr_hours"`
+}
+
+// PatchMetric tracks patch management metrics
+type PatchMetric struct {
+	PatchesAvailable    int     `json:"patches_available"`
+	PatchesApplied      int     `json:"patches_applied"`
+	CriticalPatches     int     `json:"critical_patches"`
+	PatchComplianceRate float64 `json:"patch_compliance_rate"`
+	AveragePatchAge     float64 `json:"average_patch_age_days"`
+} 
+
+// ContinuousReportingStandard represents the FedRAMP continuous reporting standard
+type ContinuousReportingStandard struct {
+	CSOId           string             `json:"cso_id"`
+	ReportingPeriod string             `json:"reporting_period"`
+	GeneratedAt     time.Time          `json:"generated_at"`
+	Metrics         KeySecurityMetrics `json:"metrics"`
+	ComplianceScore float64            `json:"compliance_score"`
+	Status          string             `json:"status"`
+} 

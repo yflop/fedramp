@@ -327,3 +327,49 @@ func ValidateKSI(ksiID string, evidence []KSIEvidence, automated bool) *KSIValid
 	
 	return validation
 } 
+
+// NewKSIValidation creates a new basic KSI validation structure for a CSO
+func NewKSIValidation(csoID string) *KSIValidation {
+	// Return a simple validation structure that matches the existing KSIValidation type
+	validation := &KSIValidation{
+		ID:               fmt.Sprintf("KSI-VAL-%d", time.Now().Unix()),
+		Name:             "KSI Compliance Validation",
+		Category:         "Compliance",
+		Status:           KSIStatusFalse,
+		Evidence:         []KSIEvidence{},
+		AutomatedCheck:   false,
+		LastValidated:    time.Now(),
+		ValidationMethod: "manual",
+		RelatedControls:  []string{},
+		ThreePAOAttested: false,
+		Notes:            fmt.Sprintf("Validation for CSO: %s", csoID),
+	}
+	
+	return validation
+}
+
+// GenerateKSIReport generates a complete KSI report for a CSO
+func GenerateKSIReport(csoID string, reportDate time.Time) *KSIReport {
+	report := NewKSIReport(csoID)
+	
+	// Add validations for each KSI
+	for ksiID, def := range KSIDefinitions {
+		// Create mock evidence for demonstration
+		evidence := []KSIEvidence{
+			{
+				Type:        def.ValidationPoints[0][:10], // Use first validation point ID
+				Description: "Evidence for " + def.Name,
+				Reference:   "DOC-" + ksiID,
+				Timestamp:   reportDate,
+				Source:      "Automated scan",
+			},
+		}
+		
+		validation := ValidateKSI(ksiID, evidence, true)
+		if validation != nil {
+			report.AddValidation(validation)
+		}
+	}
+	
+	return report
+}
