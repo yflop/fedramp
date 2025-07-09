@@ -273,4 +273,49 @@ Legend: ✅ Complete | 🔄 In Progress | ⏳ Planned
 
 ---
 
+## FedRAMP Machine Readable (FRMR) Support
+
+This implementation now includes support for the official FedRAMP Machine Readable (FRMR) document formats from the [FedRAMP/docs](https://github.com/FedRAMP/docs) repository. FRMR provides structured JSON schemas for FedRAMP requirements, making them easier to parse and validate programmatically.
+
+### FRMR Features
+
+- **Parser**: Full support for FRMR JSON schema including FRD (Definitions), FRR (Rules), FRA (Assistance), and KSI (Key Security Indicators)
+- **Validation**: Validate KSI requirements against evidence with detailed reporting
+- **CLI Integration**: Fetch, validate, and export FRMR documents
+- **Official Alignment**: Direct compatibility with FedRAMP's official machine-readable formats
+
+### FRMR CLI Commands
+
+```bash
+# Fetch official FRMR documents from FedRAMP repository
+gocomply_fedramp frmr fetch ksi
+gocomply_fedramp frmr fetch mas
+gocomply_fedramp frmr fetch scn
+
+# Display information about a FRMR document
+gocomply_fedramp frmr info FRMR.KSI.key-security-indicators.json
+
+# Validate KSI requirements against evidence
+gocomply_fedramp frmr validate FRMR.KSI.key-security-indicators.json evidence.json
+
+# Export FRMR data in different formats
+gocomply_fedramp frmr export FRMR.KSI.key-security-indicators.json --format markdown --output ksi.md
+```
+
+### FRMR Demo
+
+Run the FRMR demo to see how to work with official FedRAMP documents:
+
+```bash
+go run examples/frmr_demo.go
+```
+
+This demonstrates:
+- Fetching official FRMR documents from GitHub
+- Parsing and validating KSI requirements
+- Generating compliance reports
+- Working with SCN definitions
+
+---
+
 **Questions?** Open an issue or join the discussion at [FedRAMP Community](https://github.com/FedRAMP/community/discussions) 
