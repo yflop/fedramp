@@ -52,6 +52,62 @@ func FRMR() cli.Command {
 				},
 				Action: exportFRMR,
 			},
+			{
+				Name:      "combine",
+				Usage:     "Combine multiple FRMR documents into one",
+				ArgsUsage: "<frmr-file1> <frmr-file2> [...]",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:  "output",
+						Usage: "Output file (default: combined-frmr.json)",
+						Value: "combined-frmr.json",
+					},
+				},
+				Action: combineFRMR,
+			},
+			{
+				Name:      "filter",
+				Usage:     "Filter FRMR document by criteria",
+				ArgsUsage: "<frmr-file>",
+				Flags: []cli.Flag{
+					cli.StringSliceFlag{
+						Name:  "impact",
+						Usage: "Filter by impact levels (Low, Moderate, High)",
+					},
+					cli.StringSliceFlag{
+						Name:  "ksi",
+						Usage: "Filter by KSI IDs",
+					},
+					cli.StringSliceFlag{
+						Name:  "type",
+						Usage: "Include only specific types (FRD, FRR, FRA, KSI)",
+					},
+					cli.StringFlag{
+						Name:  "output",
+						Usage: "Output file (default: stdout)",
+					},
+				},
+				Action: filterFRMR,
+			},
+			{
+				Name:      "evidence-template",
+				Usage:     "Generate an evidence template for KSI validation",
+				ArgsUsage: "<frmr-file>",
+				Flags: []cli.Flag{
+					cli.StringFlag{
+						Name:  "output",
+						Usage: "Output file (default: evidence-template.json)",
+						Value: "evidence-template.json",
+					},
+				},
+				Action: evidenceTemplateFRMR,
+			},
+			{
+				Name:      "schema-validate",
+				Usage:     "Validate FRMR document against schema",
+				ArgsUsage: "<frmr-file>",
+				Action:    schemaValidateFRMR,
+			},
 		},
 	}
 }
@@ -302,29 +358,161 @@ func exportFRMR(c *cli.Context) error {
 }
 
 func exportMarkdown(w *os.File, doc *frmr.FRMRDocument) error {
-	fmt.Fprintf(w, "# %s\n\n", doc.Info.Name)
-	fmt.Fprintf(w, "**Current Release:** %s\n\n", doc.Info.CurrentRelease)
+	exporter := frmr.NewMarkdownExporter()
+	return exporter.Export(doc, w)
+}
 
-	if len(doc.KSI) > 0 {
-		fmt.Fprintf(w, "## Key Security Indicators\n\n")
-		for _, ksi := range doc.KSI {
-			fmt.Fprintf(w, "### %s: %s\n\n", ksi.ID, ksi.Name)
-			fmt.Fprintf(w, "%s\n\n", ksi.Indicator)
-			fmt.Fprintf(w, "**Requirements:**\n\n")
-			for _, req := range ksi.Requirements {
-				fmt.Fprintf(w, "- **%s**: %s\n", req.ID, req.Statement)
-				if len(req.Controls) > 0 {
-					fmt.Fprintf(w, "  - Controls: ")
-					controls := []string{}
-					for _, ctrl := range req.Controls {
-						controls = append(controls, ctrl.ControlID)
-					}
-					fmt.Fprintf(w, "%s\n", strings.Join(controls, ", "))
-				}
-			}
-			fmt.Fprintf(w, "\n")
-		}
+func combineFRMR(c *cli.Context) error {
+	if c.NArg() < 2 {
+		return cli.NewExitError("Please specify at least two FRMR files to combine", 1)
 	}
 
+	// Load all documents
+	docs := make([]*frmr.FRMRDocument, 0, c.NArg())
+	for i := 0; i < c.NArg(); i++ {
+		file, err := os.Open(c.Args()[i])
+		if err != nil {
+			return cli.NewExitError(fmt.Sprintf("Failed to open file %s: %v", c.Args()[i], err), 1)
+		}
+		defer file.Close()
+
+		doc, err := frmr.ParseFRMR(file)
+		if err != nil {
+			return cli.NewExitError(fmt.Sprintf("Failed to parse %s: %v", c.Args()[i], err), 1)
+		}
+		docs = append(docs, doc)
+	}
+
+	// Combine documents
+	combined, err := frmr.CombineFRMRDocuments(docs...)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to combine documents: %v", err), 1)
+	}
+
+	// Write output
+	output := c.String("output")
+	file, err := os.Create(output)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to create output file: %v", err), 1)
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(combined); err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to write combined document: %v", err), 1)
+	}
+
+	fmt.Printf("Combined %d documents into %s\n", len(docs), output)
 	return nil
+}
+
+func filterFRMR(c *cli.Context) error {
+	if c.NArg() < 1 {
+		return cli.NewExitError("Please specify FRMR file", 1)
+	}
+
+	file, err := os.Open(c.Args()[0])
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to open file: %v", err), 1)
+	}
+	defer file.Close()
+
+	doc, err := frmr.ParseFRMR(file)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to parse document: %v", err), 1)
+	}
+
+	// Build filter options
+	opts := frmr.FilterOptions{
+		ImpactLevels: c.StringSlice("impact"),
+		KSIIDs:       c.StringSlice("ksi"),
+		Types:        c.StringSlice("type"),
+	}
+
+	// Apply filter
+	filtered := frmr.FilterDocument(doc, opts)
+
+	// Write output
+	var writer *os.File
+	output := c.String("output")
+	if output == "" {
+		writer = os.Stdout
+	} else {
+		writer, err = os.Create(output)
+		if err != nil {
+			return cli.NewExitError(fmt.Sprintf("Failed to create output file: %v", err), 1)
+		}
+		defer writer.Close()
+	}
+
+	encoder := json.NewEncoder(writer)
+	encoder.SetIndent("", "  ")
+	return encoder.Encode(filtered)
+}
+
+func evidenceTemplateFRMR(c *cli.Context) error {
+	if c.NArg() < 1 {
+		return cli.NewExitError("Please specify FRMR file", 1)
+	}
+
+	file, err := os.Open(c.Args()[0])
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to open file: %v", err), 1)
+	}
+	defer file.Close()
+
+	doc, err := frmr.ParseFRMR(file)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to parse document: %v", err), 1)
+	}
+
+	// Create output file
+	output := c.String("output")
+	outFile, err := os.Create(output)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to create output file: %v", err), 1)
+	}
+	defer outFile.Close()
+
+	// Generate and write template
+	if err := frmr.ExportEvidenceTemplate(doc, outFile); err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to generate evidence template: %v", err), 1)
+	}
+
+	fmt.Printf("Evidence template saved to %s\n", output)
+	fmt.Printf("Edit the file and set each requirement ID to true/false based on your implementation.\n")
+	return nil
+}
+
+func schemaValidateFRMR(c *cli.Context) error {
+	if c.NArg() < 1 {
+		return cli.NewExitError("Please specify FRMR file", 1)
+	}
+
+	file, err := os.Open(c.Args()[0])
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to open file: %v", err), 1)
+	}
+	defer file.Close()
+
+	doc, err := frmr.ParseFRMR(file)
+	if err != nil {
+		return cli.NewExitError(fmt.Sprintf("Failed to parse document: %v", err), 1)
+	}
+
+	// Validate schema
+	errors := frmr.ValidateSchema(doc)
+	
+	if len(errors) == 0 {
+		fmt.Println("✅ Document is valid!")
+		return nil
+	}
+
+	fmt.Printf("❌ Document has %d validation errors:\n\n", len(errors))
+	for i, err := range errors {
+		fmt.Printf("%d. %s\n", i+1, err)
+	}
+	
+	return cli.NewExitError("Document validation failed", 1)
 } 

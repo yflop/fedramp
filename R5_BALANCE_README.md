@@ -302,19 +302,59 @@ gocomply_fedramp frmr validate FRMR.KSI.key-security-indicators.json evidence.js
 gocomply_fedramp frmr export FRMR.KSI.key-security-indicators.json --format markdown --output ksi.md
 ```
 
-### FRMR Demo
+### FRMR Tools and Capabilities
 
-Run the FRMR demo to see how to work with official FedRAMP documents:
+The FRMR implementation includes comprehensive tools aligned with the official FedRAMP/docs repository:
+
+#### Document Management
+- **Fetch**: Download official FRMR documents from FedRAMP/docs
+- **Combine**: Merge multiple FRMR documents (useful for combined baselines)
+- **Filter**: Extract specific requirements by impact level, type, or ID
+- **Validate**: Check documents against FedRAMP schema requirements
+
+#### Assessment Support
+- **Evidence Templates**: Generate starter evidence files for KSI validation
+- **Validation Reports**: Produce detailed compliance assessments
+- **Markdown Export**: Convert FRMR to human-readable documentation
+
+#### Advanced CLI Commands
 
 ```bash
-go run examples/frmr_demo.go
+# Combine multiple documents
+gocomply_fedramp frmr combine FRMR.KSI.*.json --output combined-20x.json
+
+# Filter for specific impact levels
+gocomply_fedramp frmr filter FRMR.KSI.*.json --impact Low --output low-ksi.json
+
+# Generate evidence template
+gocomply_fedramp frmr evidence-template FRMR.KSI.*.json --output my-evidence.json
+
+# Validate document schema
+gocomply_fedramp frmr schema-validate my-frmr-doc.json
+
+# Advanced filtering
+gocomply_fedramp frmr filter doc.json --ksi KSI-IAM,KSI-MLA --type KSI,FRR
 ```
 
-This demonstrates:
-- Fetching official FRMR documents from GitHub
-- Parsing and validating KSI requirements
-- Generating compliance reports
-- Working with SCN definitions
+### FRMR Demos
+
+Run the comprehensive demos to see all features:
+
+```bash
+# Basic FRMR operations
+go run examples/frmr_demo.go
+
+# Advanced tools demonstration
+go run examples/frmr_tools_demo.go
+```
+
+These demonstrate:
+- Fetching and parsing official documents
+- Schema validation
+- Document filtering and combining
+- Evidence template generation
+- Markdown export with templates
+- Compliance scoring and reporting
 
 ---
 
