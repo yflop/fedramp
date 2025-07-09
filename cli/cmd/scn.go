@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/gocomply/fedramp/pkg/fedramp"
 	"github.com/urfave/cli"

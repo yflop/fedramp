@@ -3,6 +3,7 @@ package fedramp
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -80,10 +81,17 @@ func (scn *SignificantChangeNotification) ClassifySCNType() error {
 		return nil
 	}
 	
-	// Check for transformative indicators
-	transformativeKeywords := []string{"new functionality", "major component", "architecture change", "new service"}
+	// Check for transformative indicators in change type
+	if scn.ChangeType == "new functionality" || scn.ChangeType == "major component" || 
+	   scn.ChangeType == "architecture change" || scn.ChangeType == "new service" {
+		scn.SCNType = SCNTransformative
+		return nil
+	}
+	
+	// Check for transformative indicators in description
+	transformativeKeywords := []string{"new functionality", "major component", "architecture change", "new service", "adding", "introducing"}
 	for _, keyword := range transformativeKeywords {
-		if contains(scn.ShortDescription, keyword) || contains(scn.ReasonForChange, keyword) {
+		if containsIgnoreCase(scn.ShortDescription, keyword) || containsIgnoreCase(scn.ReasonForChange, keyword) {
 			scn.SCNType = SCNTransformative
 			return nil
 		}
@@ -179,6 +187,10 @@ func (scn *SignificantChangeNotification) SetStatus(status string) {
 // Helper functions
 func contains(text, substring string) bool {
 	return len(text) >= len(substring) && text[:len(substring)] == substring
+}
+
+func containsIgnoreCase(text, substring string) bool {
+	return strings.Contains(strings.ToLower(text), strings.ToLower(substring))
 }
 
 func containsString(slice []string, item string) bool {
