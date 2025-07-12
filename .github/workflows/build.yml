@@ -31,6 +31,7 @@ jobs:
     - name: Build
       run: |
         export PATH=~/go/bin:$PATH
+        go install -v github.com/markbates/pkger/cmd/pkger@v0.17.1
         make build
 
     - name: Unit tests

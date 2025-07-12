@@ -12,7 +12,7 @@ bundled/pkged.go: pkger README.md
 .PHONY: pkger vendor
 pkger:
 ifeq ("$(wildcard $(GOPATH)/bin/pkger)","")
-	go get -u -v github.com/markbates/pkger/cmd/pkger
+	go install -v github.com/markbates/pkger/cmd/pkger@v0.17.1
 endif
 
 ci-update-bundled-deps: ci-update-fedramp-templates ci-update-fedramp-catalogs
