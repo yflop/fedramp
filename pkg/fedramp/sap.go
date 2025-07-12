@@ -22,7 +22,7 @@ type SecurityAssessmentPlan struct {
 	Version           string             `json:"version"`
 	CreatedAt         time.Time          `json:"created_at"`
 	AssessmentType    string             `json:"assessment_type"` // initial, annual, significant-change
-	Scope             AssessmentScope    `json:"scope"`
+	Scope             SAPAssessmentScope `json:"scope"`
 	Schedule          AssessmentSchedule `json:"schedule"`
 	TeamComposition   AssessmentTeam     `json:"team_composition"`
 	Methodology       TestMethodology    `json:"methodology"`
@@ -32,8 +32,8 @@ type SecurityAssessmentPlan struct {
 	Deliverables      []Deliverable      `json:"deliverables"`
 }
 
-// AssessmentScope defines what will be assessed
-type AssessmentScope struct {
+// SAPAssessmentScope defines what will be assessed
+type SAPAssessmentScope struct {
 	SystemBoundary    SystemBoundary   `json:"system_boundary"`
 	Locations         []string         `json:"locations"`
 	DataCenters       []DataCenter     `json:"data_centers"`

@@ -37,7 +37,7 @@ type POAMItem struct {
 	Status              string    `json:"status"` // Open, Ongoing, Risk Accepted, Completed, Cancelled
 	ResponsibleParty    string    `json:"responsible_party"`
 	Resources           string    `json:"resources"`
-	MilestoneDates      []Milestone `json:"milestone_dates"`
+	MilestoneDates      []POAMMilestone `json:"milestone_dates"`
 	IdentifiedDate      time.Time `json:"identified_date"`
 	PlannedCompletion   time.Time `json:"planned_completion"`
 	ActualCompletion    *time.Time `json:"actual_completion,omitempty"`
@@ -51,14 +51,13 @@ type POAMItem struct {
 	OperationalRequirement bool   `json:"operational_requirement"`
 }
 
-// Milestone represents a specific milestone in remediation
-type Milestone struct {
-	MilestoneID   string    `json:"milestone_id"`
-	Description   string    `json:"description"`
-	ScheduledDate time.Time `json:"scheduled_date"`
-	ActualDate    *time.Time `json:"actual_date,omitempty"`
-	Status        string    `json:"status"` // Pending, In Progress, Completed, Delayed
-	Notes         string    `json:"notes,omitempty"`
+// POAMMilestone represents a milestone in the POA&M
+type POAMMilestone struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	DueDate     time.Time `json:"due_date"`
+	Status      string    `json:"status"`
 }
 
 // POAMSummary provides summary statistics

@@ -24,12 +24,12 @@ type SecurityAssessmentReport struct {
 	AssessmentPeriod  AssessmentPeriod    `json:"assessment_period"`
 	ExecutiveSummary  ExecutiveSummary    `json:"executive_summary"`
 	AssessmentTeam    AssessmentTeam      `json:"assessment_team"`
-	Methodology       AssessmentMethod    `json:"methodology"`
+	Methodology       SARAssessmentMethod `json:"methodology"`
 	ControlFindings   []ControlFinding    `json:"control_findings"`
 	RiskSummary       RiskSummary         `json:"risk_summary"`
 	Recommendations   []Recommendation    `json:"recommendations"`
 	TestCases         []TestCase          `json:"test_cases"`
-	Evidence          []AssessmentEvidence `json:"evidence"`
+	Evidence          []SARAssessmentEvidence `json:"evidence"`
 	ThreePAOStatement ThreePAOStatement   `json:"3pao_statement"`
 }
 
@@ -70,8 +70,8 @@ type TeamMember struct {
 	YearsExperience int      `json:"years_experience"`
 }
 
-// AssessmentMethod describes the assessment methodology
-type AssessmentMethod struct {
+// SARAssessmentMethod describes the assessment methodology
+type SARAssessmentMethod struct {
 	Framework        string   `json:"framework"` // NIST SP 800-53A
 	SamplingApproach string   `json:"sampling_approach"`
 	TestingMethods   []string `json:"testing_methods"` // interview, examine, test
@@ -133,8 +133,8 @@ type Recommendation struct {
 	Timeline    string `json:"timeline"`
 }
 
-// AssessmentEvidence documents evidence collected
-type AssessmentEvidence struct {
+// SARAssessmentEvidence documents evidence collected
+type SARAssessmentEvidence struct {
 	EvidenceID   string    `json:"evidence_id"`
 	Type         string    `json:"type"` // screenshot, document, interview, observation
 	Description  string    `json:"description"`
@@ -163,7 +163,7 @@ func NewSecurityAssessmentReport(serviceID, assessmentType string) *SecurityAsse
 		GeneratedAt:       time.Now(),
 		ControlFindings:   make([]ControlFinding, 0),
 		TestCases:         make([]TestCase, 0),
-		Evidence:          make([]AssessmentEvidence, 0),
+		Evidence:          make([]SARAssessmentEvidence, 0),
 		Recommendations:   make([]Recommendation, 0),
 	}
 }
