@@ -4,16 +4,21 @@ go 1.19
 
 require (
 	github.com/gocomply/oscalkit v0.3.4
+	github.com/gorilla/mux v1.8.0
 	github.com/jbowtie/gokogiri v0.0.0-20190301021639-37f655d3078f
 	github.com/markbates/pkger v0.17.1
 	github.com/opencontrol/compliance-masonry v1.1.6
 	github.com/opencontrol/doc-template v0.0.0-20190718133209-dc8b9ba59eec
+	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.8.1
 	github.com/urfave/cli v1.22.5
 )
 
 // New dependencies for server implementation
-require github.com/stretchr/testify v1.8.2 // indirect
+require (
+	github.com/lib/pq v1.10.7
+	github.com/stretchr/testify v1.8.2 // indirect
+)
 
 require (
 	github.com/Masterminds/vcs v1.13.3 // indirect
