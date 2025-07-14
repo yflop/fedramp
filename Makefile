@@ -8,11 +8,16 @@ build: bundled/pkged.go
 	$(GOBUILD) ./cli/gocomply_fedramp
 
 bundled/pkged.go: pkger README.md
-ifdef PKGER_BIN
-	$(PKGER_BIN) -o bundled
-else
-	GO111MODULE=on go run -mod=mod github.com/markbates/pkger/cmd/pkger -o bundled
-endif
+	@if [ ! -f bundled/pkged.go ]; then \
+		echo "Generating pkged.go..."; \
+		if [ -n "$(PKGER_BIN)" ]; then \
+			$(PKGER_BIN) -o bundled; \
+		else \
+			GO111MODULE=on go run -mod=mod github.com/markbates/pkger/cmd/pkger -o bundled; \
+		fi \
+	else \
+		echo "pkged.go already exists, skipping generation"; \
+	fi
 
 .PHONY: pkger vendor
 pkger:
