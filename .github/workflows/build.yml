@@ -28,11 +28,13 @@ jobs:
     - name: Get Go dependencies
       run: go get -v -t -d ./...
 
-    - name: Build
+    - name: Install pkger
       run: |
-        export PATH=~/go/bin:$PATH
         go install -v github.com/markbates/pkger/cmd/pkger@v0.17.1
-        make build
+        echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
+
+    - name: Build
+      run: make build
 
     - name: Unit tests
       run: go test ./...
