@@ -1,51 +1,44 @@
 # CI Build Notes
 
-## Successfully Tested Locally
+## Local Build Test Results
 
-The build has been successfully tested locally with the following steps:
+Successfully tested the build locally with the following configuration:
 
-### 1. Environment
-- Go 1.19+ (tested with Go 1.24.5)
-- All dependencies resolved
+### Environment
+- Go version: 1.24.5 darwin/arm64
+- pkger: v0.17.1 (installed via go install)
+- OS: macOS (darwin 25.0.0)
 
-### 2. Build Steps Executed
-```bash
-# Install dependencies
-go get -v -t -d ./...
+### Build Steps Executed
+1. `go install -v github.com/markbates/pkger/cmd/pkger@v0.17.1` - Success
+2. `pkger -o bundled` - Success (generated 5.7MB pkged.go file)
+3. `go build ./cli/gocomply_fedramp` - Success
 
-# Install pkger
-go install -v github.com/markbates/pkger/cmd/pkger@v0.17.1
+### Test Results
+- Build completed successfully
+- No test failures (no test files in project)
+- All dependencies resolved properly
 
-# Generate pkged.go (IMPORTANT: Use -mod=mod to bypass vendor)
-GO111MODULE=on go run -mod=mod github.com/markbates/pkger/cmd/pkger -o bundled
+## Upstream CI Configuration
 
-# Build the CLI tool
-GO111MODULE=on go build ./cli/gocomply_fedramp
+The upstream GoComply/fedramp repository has an outdated CI configuration:
+- Uses Go 1.13.x and 1.14.x (very old versions)
+- Uses `go get` to install pkger (doesn't work in Go 1.17+)
+- Has pkged.go (5.9MB) committed to the repository
 
-# Run tests (excluding examples)
-go test $(go list ./... | grep -v /examples)
-```
+## Changes Made for CI Compatibility
 
-### 3. Key Fixes Applied
-- Updated GitHub Actions workflows to use Go 1.19+
-- Fixed pkger installation to use `go install` (required for Go 1.17+)
-- Resolved type conflicts in new R5 Balance files
-- Removed interfering `bundled/pkger.go` file
+1. **Updated Go versions**: Changed from 1.13.x/1.14.x to 1.19.x/1.20.x
+   - Required for io/fs package support
+   - Compatible with modern Go tooling
 
-### 4. Important Note About bundled/pkged.go
-The `bundled/pkged.go` file is a large (5.9MB) generated file that contains embedded templates and catalogs. It is:
-- Already tracked in the repository
-- Too large to push in some cases
-- Must be regenerated locally after pulling changes
+2. **Fixed pkger installation**: 
+   - Changed from `go get` to `go install` for Go 1.17+ compatibility
+   - Added separate installation step in workflow
+   - Updated Makefile to use installed pkger binary when available
 
-To regenerate:
-```bash
-GO111MODULE=on go run -mod=mod github.com/markbates/pkger/cmd/pkger -o bundled
-```
+3. **Updated GitHub Actions**:
+   - Upgraded actions/setup-go from v1 to v4
+   - Added proper PATH configuration for installed Go binaries
 
-### 5. CI Should Now Pass
-With the updated workflows and fixes, the CI should successfully:
-1. Use Go 1.19+ (not 1.14.15)
-2. Install pkger properly
-3. Build without type conflicts
-4. Pass all tests 
+The CI should now pass when the upstream maintainers run it. 
